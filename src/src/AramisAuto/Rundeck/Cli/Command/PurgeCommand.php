@@ -67,7 +67,7 @@ class PurgeCommand extends Command
     private function purgeMysql($contentsRundeckConfig, InputInterface $input, OutputInterface $output)
     {
         // Extract database connection informations
-        $connectionInformations = array('hostname' => null, 'database' => null, 'username' => null, 'password' => null);
+        $connectionInformations = array('hostname' => null, 'port' => 3306, 'database' => null, 'username' => null, 'password' => null);
         $matches = array();
         preg_match('/dataSource.url ?= ?jdbc:(\w+):.*/', $contentsRundeckConfig, $matches);
         if (!count($matches)) {
@@ -81,16 +81,17 @@ class PurgeCommand extends Command
             throw new \RuntimeException(sprintf('Unsupported database - {database: "%s"}', $matches[1]));
         } else {
             // Hostname and database
-            preg_match('|jdbc:mysql://(\w+)/(\w+).*|', $contentsRundeckConfig, $matches);
-            if (!count($matches)) {
+            $url = parse_url(substr($matches[0], strpos($matches[0], 'mysql://')));
+            if (!$url) {
                 throw new \RuntimeException(
                     sprintf(
                         'Impossible to parse DSN - {path: "%s"}', $input->getOption('rundeck-config')
                     )
                 );
             }
-            $connectionInformations['hostname'] = $matches[1];
-            $connectionInformations['database'] = $matches[2];
+            $connectionInformations['port'] = (isset($url['port']) ? $url['port'] : $connectionInformations['port']);
+            $connectionInformations['hostname'] = $url['host'];
+            $connectionInformations['database'] = substr($url['path'], 1);
 
             // Username
             preg_match('/dataSource.username ?= ?(.*)/', $contentsRundeckConfig, $matches);
@@ -112,8 +113,9 @@ class PurgeCommand extends Command
         // Log
         $output->writeln(
             sprintf(
-                '<info>Purging records from database</info> - {database: "mysql", hostname: "%s", username: "%s", name": "%s"}',
+                '<info>Purging records from database</info> - {database: "mysql", hostname: "%s", port: "%s", username: "%s", name": "%s"}',
                 $connectionInformations['hostname'],
+                $connectionInformations['port'],
                 $connectionInformations['username'],
                 $connectionInformations['database']
             )
@@ -122,8 +124,9 @@ class PurgeCommand extends Command
         // Connect to database
         $pdo = new \PDO(
             sprintf(
-                'mysql:host=%s;dbname=%s',
+                'mysql:host=%s;port=%s;dbname=%s',
                 $connectionInformations['hostname'],
+                $connectionInformations['port'],
                 $connectionInformations['database']
             ),
             $connectionInformations['username'],
