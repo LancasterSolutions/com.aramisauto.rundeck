@@ -1,12 +1,12 @@
 [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/ARAMISAUTO/com.aramisauto.rundeck/badges/quality-score.png?s=c552c643de94d20e8b23e28c8f9082f1622e9b5a)](https://scrutinizer-ci.com/g/ARAMISAUTO/com.aramisauto.rundeck/)
 
-#Installation
+# Installation
 
 You just have to download ```rundeck-helper.phar``` from latest release : https://github.com/ARAMISAUTO/com.aramisauto.rundeck/releases and execute it.
 
-#Available commands
+# Available commands
 
-##purge
+## purge
 
 This command deletes old Rundeck execution logs in database and filesystem. It is a workaround for the Rundeck issue : https://github.com/dtolabs/rundeck/issues/357
 
