@@ -212,7 +212,9 @@ EOT;
                 $pdo->exec(sprintf("DELETE FROM workflow_step WHERE id = IN(%s)", $res['ws_stepids']));
 
                 // Remove log from filesystem
-                $fs->remove($res['ex_logpfad']);
+                if ($fs->exists($res['ex_logpfad'])) {
+                    $fs->remove($res['ex_logpfad']);
+                }
             }
 
             // Log
