@@ -2,6 +2,7 @@
 
 namespace AramisAuto\Rundeck\Cli\Command;
 
+use mysql_xdevapi\Exception;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Command\Command;
@@ -208,8 +209,8 @@ EOT;
                 $pdo->exec("DELETE FROM base_report WHERE id = ".$res['br_id']);
                 $pdo->exec("DELETE FROM execution WHERE id = ".$res['ex_id']);
                 $pdo->exec("DELETE FROM workflow WHERE id = ".$res['ex_wfid']);
-                $pdo->exec("DELETE FROM workflow_workflow_step WHERE id = ".$res['ex_wfid']);
-                $pdo->exec(sprintf("DELETE FROM workflow_step WHERE id = IN(%s)", $res['ws_stepids']));
+                $pdo->exec("DELETE FROM workflow_workflow_step WHERE workflow_commands_id = ".$res['ex_wfid']);
+                $pdo->exec(sprintf("DELETE FROM workflow_step WHERE id IN(%s)", $res['ws_stepids']));
 
                 // Remove log from filesystem
                 if ($fs->exists($res['ex_logpfad'])) {
