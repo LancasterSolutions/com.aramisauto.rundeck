@@ -209,7 +209,7 @@ EOT;
                 $pdo->exec("DELETE FROM execution WHERE id = ".$res['ex_id']);
                 $pdo->exec("DELETE FROM workflow WHERE id = ".$res['ex_wfid']);
                 $pdo->exec("DELETE FROM workflow_workflow_step WHERE workflow_commands_id = ".$res['ex_wfid']);
-                $pdo->exec(sprintf("DELETE FROM workflow_step WHERE id IN(%s)", $res['ws_stepids']));
+                $pdo->exec(sprintf("DELETE FROM workflow_step WHERE id IN (%s)", $res['ws_stepids']));
 
                 // Remove log from filesystem
                 if ($fs->exists($res['ex_logpfad'])) {
